@@ -1,0 +1,158 @@
+syntax = "proto3";
+
+package raftnode;
+
+service raftnode {
+    rpc noop(Null)                                              returns (Null)   {}
+    rpc isLeader(isLeaderRequest)                               returns (isLeaderResponse)   {}
+    rpc getLeader(Null)                                         returns (getLeaderResponse)   {}
+    rpc putValue(putValueRequest)                               returns (putValueResponse)   {}
+    rpc getValue(getValueRequest)                               returns (getValueResponse)   {}
+    rpc requestVote(requestVoteRequest)                         returns (requestVoteResponse)   {}
+    rpc appendEntries(appendEntriesRequest)                     returns (appendEntriesResponse)   {}
+    rpc setCM(setCMRequest)                                     returns (setCMResponse)   {}
+    rpc getStatus(Null)                                         returns (getStatusResponse)   {}
+    rpc getTimestamp(Null)                                      returns (getTimestampResponse) {}
+    rpc getAppendEntryLatency(getAppendEntryLatencyRequest)     returns (getAppendEntryLatencyResponse) {}
+    rpc resetServer(Null)                                       returns (Null) {}
+    rpc restartServer(restartServerRequest)                     returns (Null) {}
+    rpc updateConfig(updateConfigRequest)                       returns (updateConfigResponse) {}
+}
+
+enum ReturnCode {
+    SUCCESS = 0;
+    FAILURE = 1;
+    CM_FAIL = 2;
+    GRANT = 3;
+    REJECT = 4;
+    NOT_LEADER = 5;
+    LOG_INCONSISTENT = 6;
+    KEY_NOT_EXIST = 7;
+}
+
+message Null {
+
+}
+
+message isLeaderRequest {
+    string      ip = 1;
+}
+
+message isLeaderResponse {
+    string      ip = 1;
+    bool        isLeader = 2;
+}
+
+message getLeaderResponse {
+    string ip = 1;
+}
+
+message putValueRequest {
+    string      key = 1;
+    string      value = 2;
+    string      uuid = 3;
+}
+
+message putValueResponse {
+    ReturnCode  code = 1;
+    string      ip = 2;
+    string      err = 3;
+}
+
+message getValueRequest {
+    string      key = 1;
+    string      uuid = 2;
+}
+
+message getValueResponse {
+    string      value = 1;
+    ReturnCode  code = 2;
+    string      ip = 3;
+}
+
+message requestVoteRequest {
+    int32       term = 1;
+    int32       candidateId = 2;
+    int32       lastLogIndex = 3;
+    int32       lastLogTerm = 4;
+    bool        CMReq = 5;
+    int32       srvId = 6;
+}
+
+message requestVoteResponse {
+    int32       term = 1;
+    ReturnCode  code = 2;
+}
+
+message restartServerRequest {
+    bool              flag = 1;
+}
+
+message Entry {
+    int32             term = 1;
+    string            key  = 2;
+    string            value = 3;
+    string            uuid = 4;
+}
+
+message appendEntriesRequest {
+    int32             term = 1;
+    int32             leaderId = 2;
+    int32             prevLogIndex = 3;
+    int32             prevLogTerm = 4;
+    repeated Entry    entries = 5;
+    int32             leaderCommit = 6;
+    bool              CMReq = 7;
+    int32             srvId = 8;
+}
+
+message appendEntriesResponse {
+    int32       term = 1;
+    ReturnCode  code = 2;
+}
+
+message setCMRequest {
+    repeated float vals = 1;
+}
+
+message setCMResponse {
+    repeated float vals = 1;
+}
+
+message getStatusResponse {
+    int32          term = 1;
+    int32          votedFor = 2;
+    repeated Entry entries = 3;
+    int32          commitIndex = 4;
+    int32          lastApplied = 5;
+    repeated int32 nextIndex = 6;
+    repeated int32 matchIndex = 7;
+    string         state = 8;
+    int32          id = 9;
+}
+
+message Timestamp {
+    int32           term = 1;
+    string          time = 2;
+    int32           type = 3;
+}
+message getTimestampResponse {
+    repeated Timestamp timestamps = 1;
+}
+
+message updateConfigRequest {
+    string config = 1;
+}
+
+message updateConfigResponse {
+    ReturnCode code = 1;
+}
+
+message getAppendEntryLatencyRequest {
+    repeated Entry entries = 1;
+
+}
+
+message getAppendEntryLatencyResponse {
+    string  time = 1;
+}

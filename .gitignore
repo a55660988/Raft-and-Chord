@@ -1,0 +1,13 @@
+vendor/
+basic-kvstore/client/client
+basic-kvstore/server/server
+__pycache__/
+.*
+!/.gitignore
+logs/
+data/
+.mypy_cache/
+logs/
+data/
+__pycache__
+settings.json

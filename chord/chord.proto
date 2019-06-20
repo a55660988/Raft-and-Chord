@@ -1,0 +1,172 @@
+syntax = "proto3";
+
+package chord;
+
+service chord {
+    rpc Noop (Null) returns (Null);
+    rpc Reset (Null) returns (Null);
+    rpc Put (PutRequest) returns (PutResponse);
+    rpc DirectPut (DirectPutRequest) returns (DirectPutResponse);
+    rpc DirectPutMulti (DirectPutMultiRequest) returns (DirectPutMultiResponse);
+    rpc Get (GetRequest) returns (GetResponse);
+    rpc GetReplicas (GetReplicasRequest) returns (GetReplicasResponse);
+    rpc Delete (DeleteRequest) returns (DeleteResponse);
+    rpc GetRange (GetRangeRequest) returns (GetRangeResponse);
+    rpc DeleteRange (DeleteRangeRequest) returns (DeleteRangeResponse);
+    rpc Notify (NotifyRequest) returns (NotifyResponse);
+    rpc Leave (Null) returns (Null);
+    rpc Resume (ResumeRequest) returns (ResumeResponse);
+    rpc GetSuccessor (GetSuccessorRequest) returns (GetSuccessorResponse);
+    rpc GetSuccessorList (Null) returns (GetSuccessorListResponse);
+    rpc GetPredecessor (Null) returns (GetPredecessorResponse);
+    rpc GetFingers (Null) returns (GetFingersResponse);
+    rpc UploadConfig (UploadConfigRequest) returns (UploadConfigResponse);
+    rpc GetStatus (Null) returns (GetStatusResponse);
+    rpc DoReplicate (DoReplicateRequest) returns (DoReplicateResponse);
+    rpc UpdateReplica (UpdateReplicaRequest) returns (UpdateReplicaResponse);
+}
+
+enum ReturnCode {
+    Success = 0;
+    Error = 1;
+    KEY_NOT_EXIST = 2;
+}
+
+message Null {
+}
+
+message PutRequest {
+    string key = 1;
+    string val = 2;
+    string id = 3;
+}
+
+message PutResponse {
+    ReturnCode code = 1;
+}
+message DirectPutRequest {
+    string key = 1;
+    string val = 2;
+    string id = 3;
+    int32 remaining = 4;
+    string uuid = 5;
+}
+
+message DirectPutResponse {
+    ReturnCode code = 1;
+}
+message DirectPutMultiRequest {
+    repeated string keys = 1;
+    repeated string vals = 2;
+    int32 remaining = 3;
+    string uuid = 5;
+}
+
+message DirectPutMultiResponse {
+    ReturnCode code = 1;
+}
+
+message GetRequest {
+    string key = 1;
+    string  id = 2;
+}
+message GetResponse {
+    string val = 1;
+    string server_addr = 2;
+    ReturnCode code = 3;
+}
+message GetReplicasRequest {
+    int32 remaining = 1;
+    string uuid = 2;
+}
+message GetReplicasResponse {
+    repeated string keys = 1;
+    repeated string vals = 2;
+}
+message DeleteRequest {
+    string key = 1;
+    string  id = 2;
+}
+message DeleteResponse {
+    ReturnCode code = 1;
+}
+message GetRangeRequest {
+    string from_id = 1;
+    string to_id = 2;
+}
+message GetRangeResponse {
+    repeated string keys = 1;
+    repeated string vals = 2;
+}
+message DeleteRangeRequest {
+    string from_id = 1;
+    string to_id = 2;
+}
+message DeleteRangeResponse {
+}
+
+message NotifyRequest {
+    string server_addr = 1;
+}
+message NotifyResponse {
+    ReturnCode code = 1;
+}
+
+
+message GetSuccessorRequest {
+    string id = 1;
+    int32 path_length = 2;
+}
+message GetSuccessorResponse {
+    string server_addr = 1;
+    int32 path_length = 2;
+    ReturnCode code = 3;
+}
+message GetSuccessorListResponse {
+    repeated string server_addrs = 1;
+    ReturnCode code = 2;
+}
+
+message GetPredecessorResponse {
+    string server_addr = 1;
+}
+message GetFingersResponse {
+    repeated string server_addrs = 1;
+}
+message ResumeRequest {
+    string server_addr = 1;
+}
+message ResumeResponse {
+    ReturnCode code = 1;
+}
+
+message UploadConfigRequest {
+    string config = 1;
+}
+message UploadConfigResponse{
+    ReturnCode code = 1;
+}
+
+message GetStatusResponse {
+    string addr = 1;
+    repeated string fingers = 2;
+    repeated string successors = 3;
+    string predecessor = 4;
+    int32 next_fingers = 5;
+    repeated string keys = 6;
+    repeated string vals = 7;
+    repeated bool owns = 8;
+}
+
+message DoReplicateRequest {
+    int32 remaining = 1;
+    string uuid = 2;
+}
+message DoReplicateResponse {
+}
+
+message UpdateReplicaRequest {
+    int32 max_failures = 1;
+}
+message UpdateReplicaResponse{
+}
